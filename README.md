@@ -1,2 +1,2 @@
 # DataScienceLearningTutorial
-Sharing scientific tutorial samples
+Sharing scientific tutorial samples.
