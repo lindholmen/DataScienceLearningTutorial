@@ -354,6 +354,107 @@ health_data = pd.DataFrame(C,index=row_index,columns=column_index)
 print(health_data)
 city_avg = health_data.mean(level= "City")
 print("Each city's average data:\n", city_avg)
-
-
 print(city_avg.mean(axis= 1, level = "Gender"))
+
+
+#%% concat and append
+
+def make_a_quick_df(cols, ind):
+    data = { c :[str(c) + str(i) for i in ind] for c in cols}
+    return pd.DataFrame(data,index=ind)
+
+make_a_quick_df("ABC",range(3))
+
+x = [1, 2, 3]
+y = [4, 5, 6]
+z = [7, 8, 9]
+print("np.concatenation:")
+print(np.concatenate([x,y,z]))
+
+x = [[1,2],
+     [3,4]]
+print("horizontally \n",np.concatenate([x,x], axis= 1))
+print("vertically \n",np.concatenate([x,x], axis= 0))
+
+series1 = pd.Series(["a","b","c"],index = [1,2,3])
+series2 = pd.Series(["d","e","f"], index = [4,5,6])
+print("concat 2 series:")
+print(pd.concat([series1,series2]))
+
+
+df1 =  make_a_quick_df("AB",[1,2])
+df2 = make_a_quick_df("AB",[3,4])
+print(df1)
+print(df2)
+print(pd.concat([df1,df2])) #默认是沿着axis=0方向concat
+
+
+X =  make_a_quick_df("AB",[0,1])
+Y = make_a_quick_df("AB",[0,1])
+print("repeat index:")
+try:
+    pd.concat([X, Y],verify_integrity=True)
+except ValueError as e:
+    print("ValueError:",e)
+print("ignore the index:")
+print(pd.concat([X,Y],ignore_index=True))
+
+print("adding multiple keys:")
+print(pd.concat([X,Y],keys=["year 2000", "year 2001"]))
+
+print("contatenation with joins")
+x2 = make_a_quick_df("ABC",[1,2])
+y2 = make_a_quick_df("BCD",[3,4])
+print("default is outer:")
+print(pd.concat([x2,y2]))
+print("change to inner:")
+print(pd.concat([x2,y2],join = "inner"))
+print("Or use columns from one data source:")
+print(pd.concat([x2,y2],join_axes=[x2.columns]))
+
+print("Using append achieves the same goal:")
+print(x2.append(y2))
+print("X2 did not get changed, unlike append in a list:\n",x2)
+
+#%% database merge (针对相同列的merge)
+df1 = pd.DataFrame({'employee': ['Bob', 'Jake', 'Lisa', 'Sue'],
+                    'group': ['Accounting', 'Engineering', 'Engineering', 'HR']})
+df2 = pd.DataFrame({'employee': ['Lisa', 'Bob', 'Jake', 'Sue'],
+                    'hire_date': [2004, 2008, 2012, 2014]})
+df3 = pd.merge(df1,df2)
+print("df3:\n",df3)
+
+df4 = pd.DataFrame({'group': ['Accounting', 'Engineering', 'HR'],
+                    'supervisor': ['Carly', 'Guido', 'Steve']})
+print("merge df3 and df4:")
+print(pd.merge(df3,df4))
+
+df5 = pd.DataFrame({'group': ['Accounting', 'Accounting',
+                              'Engineering', 'Engineering', 'HR', 'HR'],
+                    'skills': ['math', 'spreadsheets', 'coding', 'linux',
+                               'spreadsheets', 'organization']})
+print("many to many merge:")
+print(pd.merge(df1,df5))
+
+
+print("using the on keyword:")
+print(pd.merge(df1,df2, on = "employee"))
+
+
+print("merging with different column names:")
+df3 = pd.DataFrame({'name': ['Jake', 'Bob', 'Lisa', 'Sue'],
+                    'salary': [70000, 80000, 120000, 90000]})
+print(pd.merge(df1,df3, left_on = "employee", right_on ="name"))
+print("then drop the redundant column")
+print(pd.merge(df1,df3, left_on = "employee", right_on ="name").drop("name", axis=1))
+
+
+#%% database join on indices， (针对相同行的join)
+df1a = df1.set_index('employee')
+df2a = df2.set_index('employee')
+print("df1a:")
+print(df1a)
+print("df2a:")
+print(df2a)
+print("join method perform a merge that defaults to join on indices")
+print(df1a.join(df2a))
