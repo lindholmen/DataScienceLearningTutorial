@@ -416,7 +416,7 @@ print("Using append achieves the same goal:")
 print(x2.append(y2))
 print("X2 did not get changed, unlike append in a list:\n",x2)
 
-#%% database merge (针对相同列的merge)
+#%% database merge (针对相同列的merge,默认是交集，除非指定how = "outer"则为并集)
 df1 = pd.DataFrame({'employee': ['Bob', 'Jake', 'Lisa', 'Sue'],
                     'group': ['Accounting', 'Engineering', 'Engineering', 'HR']})
 df2 = pd.DataFrame({'employee': ['Lisa', 'Bob', 'Jake', 'Sue'],
@@ -458,3 +458,83 @@ print("df2a:")
 print(df2a)
 print("join method perform a merge that defaults to join on indices")
 print(df1a.join(df2a))
+
+#%% inner and outer join
+df6 = pd.DataFrame({'name': ['Peter', 'Paul', 'Mary'],
+                    'food': ['fish', 'beans', 'bread']},
+                   columns=['name', 'food'])
+df7 = pd.DataFrame({'name': ['Mary', 'Joseph'],
+                    'drink': ['wine', 'beer']},
+                   columns=['name', 'drink'])
+
+print("default is inner join to find intersection:")
+print(pd.merge(df6, df7)) #
+print('this is outer join:')
+print(pd.merge(df6, df7, how='outer'))
+print('this is left join:')
+print(pd.merge(df6, df7, how='left'))
+print('this is right join:')
+print(pd.merge(df6, df7, how='right'))
+
+#overlapping column names:
+
+df8 = pd.DataFrame({'name': ['Bob', 'Jake', 'Lisa', 'Sue'],
+                    'rank': [1, 2, 3, 4]})
+df9 = pd.DataFrame({'name': ['Bob', 'Jake', 'Lisa', 'Sue'],
+                    'rank': [3, 1, 4, 2]})
+
+print(pd.merge(df8,df9, on="name"))
+pd.merge(df8, df9, on="name", suffixes=["_L", "_R"])
+
+#%% US states data
+pop = pd.read_csv("data/state-population.csv")
+print(pop.head())
+
+areas = pd.read_csv("data/state-areas.csv")
+print(areas.head())
+
+abbrevs = pd.read_csv("data/state-abbrevs.csv")
+print(abbrevs.head())
+
+merged = pd.merge(pop, abbrevs, how="outer", left_on= "state/region", right_on="abbreviation")
+merged = merged.drop("abbreviation", axis=1)
+print(merged)
+#验证空项
+print(merged.isnull().any())
+
+#找到空项：
+print(merged[merged['population'].isnull()])
+print(merged.loc[merged["state"].isnull(), "state/region"].unique())
+
+#填充空项
+merged.loc[merged["state/region"]=="PR", "state"]= "Puerto Rico"
+merged.loc[merged["state/region"] == "USA", "state"] = "United States"
+print(merged.isnull().any())
+
+# merged with areas:
+final = pd.merge(merged, areas, on = "state",how="left")
+print(final.head())
+print(final.isnull().any())
+
+#找到area中的空项：
+print(final.loc[final["area (sq. mi)"].isnull(), "state"].unique())
+# drop all entries where state is "United States"
+#final.dropna(inplace=True) # drop所有的null选项
+final = final.dropna()
+print(final.isnull().any())
+
+# 重点查询！！！！
+data2010 = final.query("year == 2010 & ages == 'total'")
+print(data2010.head())
+
+# 吧state变成index是关键，这样column之间做运算后，index自动对应相应的state的值。
+# inplace 的用法很巧，不用修改之后赋值了。
+data2010.set_index("state",inplace = True)
+density = data2010["population"]/data2010["area (sq. mi)"]
+density.sort_values(ascending=False,inplace = True)
+print("density:")
+print(density)
+print(density.head())
+print(density.tail())
+
+
