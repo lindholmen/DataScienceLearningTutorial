@@ -18,7 +18,7 @@ print("concatenation:",np.concatenate([x,y]))
 grid = np.arange(16).reshape((4,4))
 upper, lower = np.vsplit(grid,[2])
 print("upper:\n", upper)
-print("lower:\n",lower)
+print("lower:\n", lower)
 
 x = np.arange(5)
 y = np.empty(5)
