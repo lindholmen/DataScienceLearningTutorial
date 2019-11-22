@@ -102,9 +102,10 @@ print("y<=0.5:",np.less_equal(y,0.5))
 # count the number of element in each row
 # 设axis=i，则Numpy沿着第i个下标变化的方向进行操作。这里0维为行，1维为列，则变化方向是列0，列1，列2方向。
 print(np.sum(x>5,axis=1))
-print(np.sum(x,axis = 1))
+
 print("check if any value is greater than 5 in each row:",np.any(x>5,axis=1))
-print("chekc if all is greather than 2:",np.all(x>2))
+print(np.sum(x,axis = 1))
+print("check if all is greater than 2:",np.all(x>2))
 # N = 50
 # x = np.random.rand(N)
 # print(x)
