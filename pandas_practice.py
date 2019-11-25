@@ -538,3 +538,23 @@ print(density.head())
 print(density.tail())
 
 
+#%% aggregation and grouping
+import seaborn as sns
+planets = sns.load_dataset("planets")
+print(planets.shape) # (1036,6)
+print(planets.head())
+
+rng = np.random.RandomState(42)
+ser = pd.Series(rng.rand(5))
+print(ser)
+print("sum:",ser.sum())
+print("mean:",ser.mean())
+
+
+df = pd.DataFrame({'A': ser, 'B': rng.rand(5)})
+print(df.head())
+print(df.mean())
+df.mean(axis=1)# axis =1 collapse, 也就是计算每行的mean, 或者运算朝着axis=1方向计算mean1,mean2, mean3...
+
+print(planets.dropna().describe())
+
