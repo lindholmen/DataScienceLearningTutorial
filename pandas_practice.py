@@ -558,3 +558,17 @@ df.mean(axis=1)# axis =1 collapse, 也就是计算每行的mean, 或者运算朝
 
 print(planets.dropna().describe())
 
+#%% groupby
+df = pd.DataFrame({"key":['A','B','C','A','B','C'], "data":range(6)})
+print(df.groupby("key")) # 返回近似 dataframe或者series的结构,所有适合dataframe或者series都可以使用
+
+print(planets.groupby("method")['orbital_period'])
+print(planets.groupby("method")['orbital_period'].median())# 这个dataframe中的orbitalperiod这个column的median
+
+# support iteration over groups, each group is series or dataframe
+for (method,group) in planets.groupby("method"):
+    print("{0:30s}, shape ={1}".format(method,group.shape))
+
+# describe大法,描述每个group的某一个column属性的统计信息
+print(planets.groupby("method")['year'].describe())
+print(planets.groupby("method")['year'].describe().unstack())
