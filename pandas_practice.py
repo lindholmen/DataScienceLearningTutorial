@@ -551,7 +551,7 @@ print("sum:",ser.sum())
 print("mean:",ser.mean())
 
 
-df = pd.DataFrame({'A': ser, 'B': rng.rand(5)})
+df = pd.DataFrame({'A': ser, 'C': rng.rand(5)})
 print(df.head())
 print(df.mean())
 df.mean(axis=1)# axis =1 collapse, 也就是计算每行的mean, 或者运算朝着axis=1方向计算mean1,mean2, mean3...
