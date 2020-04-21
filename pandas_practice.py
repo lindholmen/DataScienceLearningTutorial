@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import tushare as ts
 
 print("pandas.version:",pd.__version__)
 
@@ -572,3 +574,38 @@ for (method,group) in planets.groupby("method"):
 # describe大法,描述每个group的某一个column属性的统计信息
 print(planets.groupby("method")['year'].describe())
 print(planets.groupby("method")['year'].describe().unstack())
+
+#%% a research case of stock correlation
+'''
+# get data from tushare
+s_pf = '600000' # 浦发
+s_gd = '601818' # 光大
+sdate = '2016-01-01'
+edate = '2016-12-31'
+df_pf = ts.get_h_data(s_pf, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
+df_gd = ts.get_h_data(s_gd, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
+print(df_pf.tail())
+print(df_gd.tail())
+
+# merge to a new df
+df = pd.concat([df_pf.close, df_gd.close], axis=1, keys = ['pf_close','gd_close'])
+df.ffill(axis=0,inplace = True)
+df.to_csv('pf_gd.csv')
+'''
+
+df = pd.read_csv('data/pf_gd.csv')
+# calculate correlation
+corr = df.corr(method = 'pearson',min_periods = 1)
+print(corr)
+
+df.plot(figsize = (20,12))
+plt.savefig("data/pf_gd.svg")
+plt.close()
+
+df['pf_one'] = df.pf_close / float(df.pf_close[0]) * 100
+df['gd_one'] = df.gd_close / float(df.gd_close[0]) * 100
+df.pf_one.plot(figsize = (20, 12))
+df.gd_one.plot(figsize = (20, 12))
+plt.savefig("data/pf_gd_one2.svg")
+plt.close()
+
