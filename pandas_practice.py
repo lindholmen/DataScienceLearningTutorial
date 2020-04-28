@@ -576,22 +576,22 @@ print(planets.groupby("method")['year'].describe())
 print(planets.groupby("method")['year'].describe().unstack())
 
 #%% a research case of stock correlation
-'''
+
 # get data from tushare
 s_pf = '600000' # 浦发
 s_gd = '601818' # 光大
 sdate = '2016-01-01'
-edate = '2016-12-31'
-df_pf = ts.get_h_data(s_pf, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
-df_gd = ts.get_h_data(s_gd, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
+edate = '2019-12-31'
+df_pf = ts.get_k_data(s_pf, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
+df_gd = ts.get_k_data(s_gd, start = sdate, end = edate).sort_index(axis = 0, ascending = True)
 print(df_pf.tail())
 print(df_gd.tail())
 
 # merge to a new df
 df = pd.concat([df_pf.close, df_gd.close], axis=1, keys = ['pf_close','gd_close'])
 df.ffill(axis=0,inplace = True)
-df.to_csv('pf_gd.csv')
-'''
+df.to_csv('data/pf_gd.csv')
+
 
 df = pd.read_csv('data/pf_gd.csv')
 # calculate correlation
